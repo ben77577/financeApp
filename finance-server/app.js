@@ -63,6 +63,40 @@ app.delete('/finance/:id', (request, response) => {
 });
 
 
+app.get('/income/:username', (request, response) => {
+  const query = 'SELECT id, username, amount, description FROM incomes WHERE username = ?';
+  const params = [request.params.username];
+  connection.query(query, params, (error, rows) => {
+   response.send({
+    ok: true,
+    incomes: rows.map(rowToObject),
+   });
+  });
+ });
+
+app.post('/income', (request, response) => {
+	const query = 'INSERT INTO incomes(username, amount, description) VALUES (?, ?, ?)';
+	const params = [request.body.username, request.body.amount, request.body.description];
+	connection.query(query, params, (error, result) => {
+		response.send({
+			ok: true,
+			id: result.insertId,
+		});
+	});
+});
+
+
+app.delete('/income/:id', (request, response) => {
+	const query = 'DELETE FROM incomes WHERE id = ?';
+	const params = [request.params.id];
+	connection.query(query, params, (error, result) => {
+		response.send({
+			ok: true,
+		});
+	});
+});
+
+
 const port = 3444;
 app.listen(port, () => {
   console.log(`Live on port ${port}`);
